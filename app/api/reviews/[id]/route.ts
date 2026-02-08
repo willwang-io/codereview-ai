@@ -17,3 +17,16 @@ export async function GET(
 
   return NextResponse.json(review);
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  await prisma.review.delete({
+    where: { id },
+  });
+
+  return NextResponse.json({ success: true });
+}

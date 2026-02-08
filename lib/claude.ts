@@ -6,6 +6,7 @@ export interface ReviewFinding {
   description: string;
   file?: string;
   line?: number;
+  code_snippet?: string;
 }
 
 export interface ReviewResult {
@@ -33,7 +34,8 @@ Respond ONLY with a JSON object in this exact format, no markdown backticks:
       "title": "Short title",
       "description": "Detailed explanation and suggested fix",
       "file": "filename if identifiable",
-      "line": null
+      "line": null,
+      "code_snippet": "the exact lines from the diff being referenced"
     }
   ]
 }

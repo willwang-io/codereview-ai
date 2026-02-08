@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchDiff, parsePRUrl } from "@/lib/github";
 import { reviewDiff } from "@/lib/claude";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const prInfo = parsePRUrl(url);
     const diff = await fetchDiff(url);
-    const review = await reviewDiff(diff);
+    const review = await reviewDiff(diff, apiKey);
 
     const saved = await prisma.review.create({
       data: {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
         repo: prInfo.repo,
         prNumber: prInfo.number,
         summary: review.summary,
-        findings: review.findings,
+        findings: review.findings as unknown as Prisma.InputJsonValue,
       },
     });
 
