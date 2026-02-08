@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  url       String
+  owner     String
+  repo      String
+  prNumber  Int
+  summary   String
+  findings  Json
+  createdAt DateTime @default(now())
+}
