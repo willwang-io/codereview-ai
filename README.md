@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeReview AI
 
-## Getting Started
+AI-powered code review for GitHub pull requests. Paste a PR URL, get structured feedback with severity-coded findings and inline code references.
 
-First, run the development server:
+**Live:** [codereview.willwang.io](https://codereview.willwang.io)
+
+## How it works
+
+1. Paste a GitHub PR URL
+2. The app fetches the diff via GitHub's API
+3. The diff is sent to Claude (Anthropic) for structured review
+4. Results are displayed with severity levels (critical, warning, suggestion) and relevant code snippets
+5. Reviews are stored in PostgreSQL for later reference
+
+Users provide their own Anthropic API key — it's sent per-request and never stored.
+
+## Tech stack
+
+- **Framework:** Next.js (App Router), TypeScript
+- **Styling:** Tailwind CSS
+- **Database:** PostgreSQL via Prisma ORM
+- **AI:** Anthropic Claude API
+- **Hosting:** Vercel + Neon (serverless Postgres)
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/willwang-io/codereview-ai.git
+cd codereview-ai
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start a local Postgres instance:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+docker compose up -d
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env` file:
 
-## Learn More
+```
+DATABASE_URL="postgresql://codereview:codereview@localhost:5432/codereview"
+```
 
-To learn more about Next.js, take a look at the following resources:
+Push the database schema and start the dev server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx prisma db push
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [localhost:3000](http://localhost:3000) and enter your Anthropic API key to start reviewing.
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+app/
+├── page.tsx                  # Home — submit a PR for review
+├── reviews/
+│   ├── page.tsx              # Review history
+│   └── [id]/page.tsx         # Single review detail
+└── api/
+    ├── review/route.ts       # POST — fetch diff, call Claude, store result
+    └── reviews/
+        ├── route.ts          # GET — list all reviews
+        └── [id]/route.ts     # GET, DELETE — single review
+lib/
+├── github.ts                 # Parse PR URLs, fetch diffs
+├── claude.ts                 # Claude API client and review prompt
+└── db.ts                     # Prisma client
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
