@@ -12,7 +12,9 @@ model Review {
   url       String
   owner     String
   repo      String
-  prNumber  Int
+  refType   String   @default("pull")
+  ref       String   @default("")
+  prNumber  Int?
   summary   String
   findings  Json
   createdAt DateTime @default(now())

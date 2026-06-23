@@ -1,25 +1,28 @@
 # CodeReview AI
 
-AI-powered code review for GitHub pull requests. Paste a PR URL, get structured feedback with severity-coded findings and inline code references.
+Personal AI-powered code review for GitHub pull requests and commits. Paste a GitHub URL, get structured feedback with severity-coded findings and inline code references.
 
 **Live:** [codereview.willwang.io](https://codereview.willwang.io)
 
+This is my personal, fast toolbox. Bring your own OpenAI API key if you want to use it too. The hosted app asks for a key per review so it can be used from anywhere without storing a shared server-side key.
+
 ## How it works
 
-1. Paste a GitHub PR URL
-2. The app fetches the diff via GitHub's API
-3. The diff is sent to Claude (Anthropic) for structured review
-4. Results are displayed with severity levels (critical, warning, suggestion) and relevant code snippets
-5. Reviews are stored in PostgreSQL for later reference
+1. Paste a GitHub pull request or commit URL
+2. Paste an OpenAI API key for the current request
+3. The app fetches the diff or patch from GitHub
+4. The diff is sent to OpenAI for structured review
+5. Results are displayed with severity levels (critical, warning, suggestion) and relevant code snippets
+6. Reviews are stored in PostgreSQL for later reference
 
-Users provide their own Anthropic API key — it's sent per-request and never stored.
+The OpenAI API key is sent to the app API for that review request and is not stored in PostgreSQL.
 
 ## Tech stack
 
 - **Framework:** Next.js (App Router), TypeScript
 - **Styling:** Tailwind CSS
 - **Database:** PostgreSQL via Prisma ORM
-- **AI:** Anthropic Claude API
+- **AI:** OpenAI Responses API
 - **Hosting:** Vercel + Neon (serverless Postgres)
 
 ## Run locally
@@ -49,7 +52,7 @@ npx prisma db push
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000) and enter your Anthropic API key to start reviewing.
+Open [localhost:3000](http://localhost:3000), paste your OpenAI API key and a GitHub pull request or commit URL, and run a review.
 
 ## Project structure
 
@@ -60,13 +63,13 @@ app/
 │   ├── page.tsx              # Review history
 │   └── [id]/page.tsx         # Single review detail
 └── api/
-    ├── review/route.ts       # POST — fetch diff, call Claude, store result
+    ├── review/route.ts       # POST — fetch diff, call OpenAI, store result
     └── reviews/
         ├── route.ts          # GET — list all reviews
         └── [id]/route.ts     # GET, DELETE — single review
 lib/
-├── github.ts                 # Parse PR URLs, fetch diffs
-├── claude.ts                 # Claude API client and review prompt
+├── github.ts                 # Parse GitHub URLs, fetch diffs
+├── openai.ts                 # OpenAI API client and review prompt
 └── db.ts                     # Prisma client
 ```
 

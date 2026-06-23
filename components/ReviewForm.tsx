@@ -46,122 +46,120 @@ export default function ReviewForm() {
   }
 
   const severityColor = {
-    critical: "bg-[var(--error-bg)] text-[var(--error)] border-[var(--error)]",
-    warning: "bg-[var(--warning-bg)] text-[var(--warning)] border-[var(--warning)]",
-    suggestion: "bg-[var(--info-bg)] text-[var(--info)] border-[var(--info)]",
+    critical: "border-[var(--error)] bg-[var(--error-bg)] text-[var(--error)]",
+    warning: "border-[var(--warning)] bg-[var(--warning-bg)] text-[var(--warning)]",
+    suggestion: "border-[var(--info)] bg-[var(--info-bg)] text-[var(--info)]",
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] bg-clip-text text-transparent">
+    <main className="max-w-3xl mx-auto px-6 py-10">
+      <header className="mb-8">
+        <h1 className="text-3xl font-semibold text-[var(--foreground)]">
           CodeReview AI
         </h1>
-        <p className="text-[var(--muted)] text-lg">
-          Paste a GitHub PR URL to get an AI-powered code review
+        <p className="text-[var(--muted)] mt-2">
+          My personal, fast toolbox. Bring your own API key if you want to use it too.
         </p>
-      </div>
+      </header>
 
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-lg mb-8">
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-[var(--foreground)] mb-2">
-            Anthropic API Key
-          </label>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="sk-ant-..."
-            className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
-          />
-          <p className="text-xs text-[var(--muted)] mt-2">
-            Your key is sent directly to the API and never stored
-          </p>
-        </div>
+      <section className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-5 mb-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              OpenAI API Key
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="sk-..."
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+            />
+            <p className="text-xs text-[var(--muted)] mt-2">
+              Sent for this request only. The app does not store it.
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="flex gap-3">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://github.com/owner/repo/pull/123"
-            className="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
-          />
-          <button
-            type="submit"
-            disabled={loading || !url || !apiKey}
-            className="bg-[var(--primary)] text-white px-8 py-3 rounded-lg text-sm font-semibold hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
-          >
-            {loading ? "Reviewing..." : "Review PR"}
-          </button>
+          <div>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              GitHub URL
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://github.com/owner/repo/commit/abc1234"
+                className="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              />
+              <button
+                type="submit"
+                disabled={loading || !url || !apiKey}
+                className="bg-[var(--primary)] text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Reviewing..." : "Review"}
+              </button>
+            </div>
+          </div>
         </form>
-      </div>
+      </section>
 
       {error && (
-        <div className="bg-[var(--error-bg)] border border-[var(--error)] text-[var(--error)] p-4 rounded-lg mb-8 shadow-md">
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-            <span>{error}</span>
-          </div>
+        <div className="border border-[var(--error)] bg-[var(--error-bg)] text-[var(--error)] p-4 rounded-md mb-6 text-sm">
+          {error}
         </div>
       )}
 
       {review && (
-        <div className="space-y-6">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-md">
-            <h2 className="font-bold text-lg text-[var(--foreground)] mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-[var(--primary)]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              Summary
-            </h2>
+        <section className="space-y-5">
+          <div className="border border-[var(--border)] rounded-lg p-5 bg-[var(--surface)]">
+            <h2 className="font-semibold text-[var(--foreground)] mb-2">Summary</h2>
             <p className="text-[var(--foreground)] leading-relaxed">{review.summary}</p>
           </div>
 
           {review.findings.length === 0 ? (
-            <div className="bg-[var(--success-bg)] border border-[var(--success)] text-[var(--success)] p-6 rounded-xl text-center shadow-md">
-              <svg className="w-12 h-12 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <p className="font-semibold text-lg">No issues found — looking good!</p>
+            <div className="border border-[var(--success)] bg-[var(--success-bg)] text-[var(--success)] p-4 rounded-md text-sm">
+              No issues found. Suspiciously peaceful.
             </div>
           ) : (
-            <div className="space-y-4">
-              {review.findings.map((f, i) => (
+            <div className="space-y-3">
+              {review.findings.map((finding, index) => (
                 <div
-                  key={i}
-                  className={`border rounded-xl p-5 shadow-md ${severityColor[f.severity]}`}
+                  key={index}
+                  className={`border rounded-lg p-4 ${severityColor[finding.severity]}`}
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full bg-black/10">
-                      {f.severity}
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-xs font-semibold uppercase">
+                      {finding.severity}
                     </span>
-                    {f.file && (
-                      <span className="text-xs font-mono opacity-70 bg-black/5 px-2 py-1 rounded">
-                        {f.file}
+                    {finding.file && (
+                      <span className="text-xs font-mono text-[var(--muted)]">
+                        {finding.file}
+                      </span>
+                    )}
+                    {finding.line && (
+                      <span className="text-xs font-mono text-[var(--muted)]">
+                        Line {finding.line}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-bold text-base mb-2">{f.title}</h3>
-                  <p className="text-sm leading-relaxed">{f.description}</p>
-                  {f.code_snippet && (
-                    <pre className="mt-3 p-3 bg-black/10 rounded-lg text-xs overflow-x-auto font-mono">
-                      <code>{f.code_snippet}</code>
+                  <h3 className="font-semibold text-[var(--foreground)] mb-1">
+                    {finding.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-[var(--foreground)]">
+                    {finding.description}
+                  </p>
+                  {finding.code_snippet && (
+                    <pre className="mt-3 p-3 bg-black/10 rounded-md text-xs overflow-x-auto font-mono">
+                      <code>{finding.code_snippet}</code>
                     </pre>
-                  )}
-                  {f.line && (
-                    <span className="text-xs opacity-60 mt-2 block font-mono">
-                      Line {f.line}
-                    </span>
                   )}
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }

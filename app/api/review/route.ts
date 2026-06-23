@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchDiff, parsePRUrl } from "@/lib/github";
-import { reviewDiff } from "@/lib/claude";
+import { fetchDiff, parseGitHubUrl } from "@/lib/github";
+import { reviewDiff } from "@/lib/openai";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 
@@ -11,16 +11,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "URL and API key are required" }, { status: 400 });
     }
 
-    const prInfo = parsePRUrl(url);
+    const target = parseGitHubUrl(url);
     const diff = await fetchDiff(url);
     const review = await reviewDiff(diff, apiKey);
 
     const saved = await prisma.review.create({
       data: {
         url,
-        owner: prInfo.owner,
-        repo: prInfo.repo,
-        prNumber: prInfo.number,
+        owner: target.owner,
+        repo: target.repo,
+        refType: target.type,
+        ref: target.ref,
+        prNumber: target.number,
         summary: review.summary,
         findings: review.findings as unknown as Prisma.InputJsonValue,
       },
